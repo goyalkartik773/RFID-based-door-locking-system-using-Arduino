@@ -3,10 +3,15 @@ An RFID-based door locking system uses an Arduino and an RC522 reader to authent
 
 # 📌 Project Preview
 🖼️ Image
-![Project Image](https://https://github.com/goyalkartik773/RFID-based-door-locking-system-using-Arduino/blob/main/coaImg.jpeg)
+</br>
+<img src="https://raw.githubusercontent.com/goyalkartik773/RFID-based-door-locking-system-using-Arduino/main/coaImg.jpeg" width="500">
 
 # 🎥 Video Demo
-<video src="./demo.mp4" controls width="500"></video>
+<video src="https://raw.githubusercontent.com/goyalkartik773/RFID-based-door-locking-system-using-Arduino/main/demo.mp4" 
+       controls 
+       width="500">
+</video>
+
 
 # 🔧 Features
 
