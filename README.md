@@ -51,7 +51,7 @@ VCC	5V
 GND	GND
 
 # circuit diagram as circuit.png
-![Circuit Image](./Screenshot 2025-11-27 144430.png)
+<img src="https://raw.githubusercontent.com/goyalkartik773/RFID-based-door-locking-system-using-Arduino/main/circuit.png](https://github.com/goyalkartik773/RFID-based-door-locking-system-using-Arduino/blob/main/circuit.png" width="500">
 
 # 💻 How It Works
 RFID reader scans the tag/card.
