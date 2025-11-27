@@ -1,0 +1,129 @@
+#include <Servo.h>
+#include <LiquidCrystal_I2C.h>
+#include <SPI.h>
+#include <MFRC522.h>
+#define SS_PIN 10
+#define RST_PIN 9
+// expected card UID in format "4C F2 2C 03"
+const String UID = "4C F2 2C 03";
+// track lock state: true = locked (servo at 0°), false = unlocked (servo at
+90°)
+bool locked = true;
+// servo control
+Servo servo;
+int currentPos = 0; // current servo angle (°)
+const int LOCK_POS = 0; // locked position (degrees)
+const int UNLOCK_POS = 90; // unlocked position (degrees)
+const int STEP_DELAY = 8; // ms delay between single-degree steps
+(smoothness)
+// LCD and RFID
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+MFRC522 rfid(SS_PIN, RST_PIN);
+void smoothMove(int target) {
+if (target == currentPos) return;
+if (target > currentPos) {
+for (int p = currentPos; p <= target; p++) {
+servo.write(p);
+delay(STEP_DELAY);
+}
+} else {
+for (int p = currentPos; p >= target; p--) {
+servo.write(p);
+delay(STEP_DELAY);
+}
+}
+currentPos = target;
+}
+String readUID() {
+String id = "";
+for (byte i = 0; i < rfid.uid.size; i++) {
+byte b = rfid.uid.uidByte[i];
+if (b < 0x10) id += "0"; // ensure two hex digits
+id += String(b, HEX);
+if (i < rfid.uid.size - 1) id += " ";
+}
+id.toUpperCase();
+return id;
+}
+void setup() {
+Serial.begin(9600);
+// servo
+servo.attach(3);
+currentPos = LOCK_POS;
+servo.write(currentPos); // start locked at 0°
+delay(200);
+// lcd
+lcd.init();
+lcd.backlight();
+// rfid
+SPI.begin();
+rfid.PCD_Init();
+lcd.clear();
+lcd.setCursor(0,0);
+lcd.print("System Ready");
+delay(800);
+lcd.clear();
+}
+void loop() {
+lcd.setCursor(4, 0);
+lcd.print("Welcome!");
+lcd.setCursor(1, 1);
+lcd.print("Put your card ");
+if (!rfid.PICC_IsNewCardPresent()) {
+delay(60);
+return;
+}
+if (!rfid.PICC_ReadCardSerial()) {
+delay(60);
+return;
+}
+// feedback
+lcd.clear();
+lcd.setCursor(0, 0);
+lcd.print("Scanning...");
+String cardID = readUID();
+Serial.print("Card UID: ");
+Serial.println(cardID);
+delay(300);
+if (cardID == UID) {
+if (locked) {
+// UNLOCK: 0 -> 90
+lcd.clear();
+lcd.setCursor(0,0);
+lcd.print("Access granted");
+lcd.setCursor(0,1);
+lcd.print("Unlocking...");
+delay(200);
+smoothMove(UNLOCK_POS); // move smoothly to 90°
+locked = false;
+lcd.clear();
+lcd.setCursor(0,0);
+lcd.print("Door opened");
+delay(1400);
+lcd.clear();
+} else {
+// LOCK: 90 -> 0
+lcd.clear();
+lcd.setCursor(0,0);
+lcd.print("Locking...");
+delay(200);
+smoothMove(LOCK_POS); // move smoothly to 0°
+locked = true;
+lcd.clear();
+lcd.setCursor(0,0);
+lcd.print("Door locked");
+delay(1200);
+lcd.clear();
+}
+} else {
+lcd.clear();
+lcd.setCursor(0, 0);
+lcd.print("Wrong card!");
+delay(1500);
+lcd.clear();
+}
+// Stop further reading for a short time (avoid rapid re-trigger)
+rfid.PICC_HaltA();
+delay(300);
+}
+
