@@ -3,7 +3,7 @@ An RFID-based door locking system uses an Arduino and an RC522 reader to authent
 
 # 📌 Project Preview
 🖼️ Image
-![Project Image](./coaPro.jpg)
+![Project Image](./coaImg.jpg)
 
 # 🎥 Video Demo
 <video src="./demo.mp4" controls width="500"></video>
@@ -46,7 +46,7 @@ VCC	5V
 GND	GND
 
 # circuit diagram as circuit.png
-![Circuit Image](./circuit.png)
+![Circuit Image](./Screenshot 2025-11-27 144430.png)
 
 # 💻 How It Works
 RFID reader scans the tag/card.
